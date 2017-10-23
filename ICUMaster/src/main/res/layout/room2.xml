@@ -1,0 +1,124 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="380dp"
+    android:layout_height="wrap_content"
+    android:background="@drawable/room_bg">
+
+    <cn.shine.icumaster.widget.MarqueeVerticalTextview
+        android:id="@+id/room_name_tv"
+        android:layout_width="10dp"
+        android:layout_height="140dp"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        android:gravity="center_horizontal"
+        tools:text="TextView" />
+    <TextView
+        android:id="@+id/room_time_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="48dp"
+        android:layout_marginTop="6dp"
+        tools:text="12:38"
+        android:textColor="@android:color/background_dark"
+        android:textSize="24sp"
+        android:textStyle="bold" />
+    <LinearLayout
+        android:id="@+id/linearLayout1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/room_time_tv"
+        android:layout_marginLeft="12dp"
+        android:layout_marginTop="8dp"
+        android:gravity="center_vertical"
+        android:layout_toRightOf="@id/room_name_tv" >
+
+        <Button
+            android:id="@+id/room_scan_patient_btn"
+            android:layout_width="@dimen/dimen_button_room"
+            android:layout_height="@dimen/dimen_button_room"
+            android:layout_marginRight="5dp"
+            android:background="@drawable/scan_patient_btn_bg" />
+
+        <cn.shine.icumaster.widget.ForceMarqueeTextView
+            android:id="@+id/room_patient_tv"
+            style="@style/room_tv"
+            android:layout_width="64dp"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="25dp"
+            android:text="@string/device_patient" />
+
+        <Button
+            android:id="@+id/room_scan_family_btn"
+            android:layout_width="@dimen/dimen_button_room"
+            android:layout_height="@dimen/dimen_button_room"
+            android:layout_marginRight="5dp"
+            android:background="@drawable/scan_family_btn_bg" />
+
+        <cn.shine.icumaster.widget.ForceMarqueeTextView
+            android:id="@+id/room_family_tv"
+            style="@style/room_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/device_family" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/linearLayout1"
+        android:layout_marginLeft="12dp"
+        android:layout_marginTop="10dp"
+        android:gravity="center_vertical"
+        android:layout_toRightOf="@id/room_name_tv" >
+
+        <Button
+            android:id="@+id/room_start_btn"
+            android:layout_width="@dimen/dimen_button_room"
+            android:layout_height="@dimen/dimen_button_room"
+            android:layout_marginRight="5dp"
+            android:background="@drawable/room_start_btn_bg" />
+
+        <TextView
+            android:id="@+id/room_start_tv"
+            style="@style/room_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="8dp"
+            android:text="@string/start" />
+
+        <Button
+            android:id="@+id/room_stop_btn"
+            android:layout_width="@dimen/dimen_button_room"
+            android:layout_height="@dimen/dimen_button_room"
+            android:layout_marginRight="5dp"
+            android:background="@drawable/room_stop_btn_bg" />
+
+        <TextView
+            android:id="@+id/room_stop_tv"
+            style="@style/room_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="8dp"
+            android:text="@string/stop" />
+
+        <Button
+            android:id="@+id/room_delete_btn"
+            android:layout_width="@dimen/dimen_button_room"
+            android:layout_height="@dimen/dimen_button_room"
+            android:layout_marginRight="5dp"
+            android:background="@drawable/room_delete_btn_bg" />
+
+        <TextView
+            android:id="@+id/room_delete_tv"
+            style="@style/room_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/delete" />
+    </LinearLayout>
+
+
+
+</RelativeLayout>

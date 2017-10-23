@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">ICU监控端</string>
+    <string name="title">ICU病房探视系统-监控端</string>
+    <string name="device_patient">手推车</string>
+    <string name="device_family">探视间</string>
+    <string name="device_room">聊天室</string>
+    <string name="room_setting_time">时间</string>
+    <string name="room_setting_record">录制</string>
+    <string name="room_setting_open">开启</string>
+    <string name="room_setting_close">关闭</string>
+    <string name="room_setting_create">创建聊天室</string>
+    <string name="confirm">确定</string>
+    <string name="exit">退出</string>
+    <string name="mac">麦克</string>
+    <string name="interrupt">中断</string>
+    <string name="exchange">交换</string>
+    <string name="time_left">剩余时间</string>
+    <string name="start">开始</string>
+    <string name="stop">停止</string>
+    <string name="delete">删除</string>
+    <string name="audio_up">音量+</string>
+    <string name="audio_down">音量-</string>
+    <string name="copyright">软件版权归北京神州视翰科技股份有限公司®所有</string>
+    <string name="refresh">刷新</string>
+    <string name="patient_device_null">请先选择手推车</string>
+
+</resources>

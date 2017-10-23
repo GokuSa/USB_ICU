@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="500dp"
+    android:layout_height="500dp"
+    android:background="@android:color/white"
+    android:orientation="vertical" >
+
+    <com.shine.visitsystem.CameraPreview
+        android:id="@+id/cameraPreview1"
+        android:background="@android:color/white"
+        android:layout_width="500dp"
+        android:layout_height="500dp" />
+
+</LinearLayout>

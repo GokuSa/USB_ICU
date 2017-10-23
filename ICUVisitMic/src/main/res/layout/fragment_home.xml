@@ -1,0 +1,96 @@
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools">
+<!--        android:background="@drawable/login_bg"-->
+    <RelativeLayout
+        android:id="@+id/srl_start"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:background="@drawable/login_bg"
+        android:keepScreenOn="true">
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/btn_shutDown"
+            android:layout_alignParentRight="true"
+            android:layout_marginBottom="12dp"
+            android:layout_marginRight="22dp"
+            android:text="关机"
+            android:textColor="@android:color/white"
+            android:textSize="20sp"/>
+
+        <Button
+            android:id="@+id/btn_shutDown"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_alignParentTop="true"
+            android:layout_marginRight="16dp"
+            android:layout_marginTop="23dp"
+            android:layout_toLeftOf="@+id/textView2"
+            android:background="@drawable/shutdown_click"/>
+
+        <RelativeLayout
+            android:id="@+id/rl_startICU"
+            android:layout_width="176dp"
+            android:layout_height="45dp"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true">
+
+            <ImageView
+                android:id="@+id/im_startICU"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:focusable="true"
+                android:src="@drawable/start_icu_click"/>
+
+            <TextView
+                android:id="@+id/tv_startICU"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:background="@null"
+                android:gravity="center"
+                android:text="启    动"
+                android:textColor="@android:color/white"
+                android:textSize="25sp"/>
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/textView1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/rl_startICU"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="48dp"
+            android:text="@string/icu_startinfo"
+            android:textColor="@android:color/black"
+            android:textSize="40sp"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginBottom="10dp"
+            android:layout_marginRight="20dp"
+            android:text="@string/apk_info"
+            android:textColor="@android:color/white"
+            android:textSize="15sp"/>
+
+        <ImageView
+            android:id="@+id/imageView2"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="22dp"
+            android:layout_marginTop="10dp"
+            tools:src="@drawable/logo_shine"/>
+    </RelativeLayout>
+</layout>
+

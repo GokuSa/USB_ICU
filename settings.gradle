@@ -1,0 +1,2 @@
+include ':ICUVisitMic', ':ICUMaster', ':libvlc_new', ':usbcameralib'
+//include ':ICUVisitMic', ':libvlc_new', ':usbcameralib'

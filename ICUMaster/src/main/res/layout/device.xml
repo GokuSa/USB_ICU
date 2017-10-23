@@ -1,0 +1,28 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="142dp"
+    android:background="@drawable/device_family_sel_bg"
+    tools:context="${relativePackage}.${activityClass}" >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="6dp"
+        android:layout_marginLeft="6dp"
+        android:layout_marginRight="6dp"
+        android:layout_marginTop="6dp"
+        android:background="@drawable/device_patient_bg" >
+
+        <cn.shine.icumaster.widget.MarqueeVerticalTextview
+            android:id="@+id/room_name_tv"
+            android:layout_width="10dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="6dp"
+            android:gravity="center_horizontal"
+            android:text="TextView" />
+    </RelativeLayout>
+
+</RelativeLayout>

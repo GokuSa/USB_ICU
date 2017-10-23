@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+
+    >
+
+    <VideoView
+        android:id="@+id/videoView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentRight="true"/>
+
+
+    <Button
+        android:id="@+id/toggleRecording_button"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="clickToggleRecording"
+        android:text="toggleRecording"/>
+    <Button
+        android:id="@+id/toggleplay_button"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/toggleRecording_button"
+        android:onClick="play"
+        android:text="播放视频流"/>
+    <Button
+        android:id="@+id/stopplay_button"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/toggleplay_button"
+        android:layout_below="@id/toggleRecording_button"
+        android:onClick="stop"
+        android:text="停止视频流"/>
+
+<EditText
+    android:id="@+id/et_url"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_below="@id/toggleRecording_button"
+    android:layout_toEndOf="@id/stopplay_button"
+    />
+    <!-- these overlap with the SurfaceView; by default, it's underneath the UI layer -->
+
+    <TextView
+        android:id="@+id/cameraParams_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/toggleplay_button"
+        android:text="[?]"
+        android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+
+    <android.opengl.GLSurfaceView
+        android:id="@+id/cameraPreview_surfaceView"
+        android:layout_width="322dp"
+        android:layout_height="242dp"
+        android:layout_alignParentBottom="true"
+
+        />
+
+
+</RelativeLayout>

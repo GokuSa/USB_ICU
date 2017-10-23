@@ -1,0 +1,174 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/rl_main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/main_bg"
+    android:paddingLeft="30dp"
+    android:paddingRight="30dp"
+     >
+
+    <RelativeLayout
+        android:id="@+id/rl"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+         >
+
+        <ImageView
+            android:id="@+id/iv_logo"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:src="@drawable/logo3" />
+
+        <TextView
+            android:id="@+id/room_name_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="3dp"
+            android:text="@string/refresh" />
+
+        <ImageView
+            android:id="@+id/main_refresh_iv"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="14dp"
+            android:layout_toLeftOf="@+id/room_name_tv"
+            android:src="@drawable/main_refresh_btn_bg" />
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/rl2"
+        android:layout_below="@+id/rl"
+        android:orientation="vertical" >
+
+        <HorizontalScrollView
+            android:id="@+id/hsv_patient"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginBottom="5dp"
+            android:layout_weight="1"
+            android:background="@drawable/device_bg_null"
+            android:fillViewport="true"
+            android:paddingLeft="8dp"
+            android:paddingRight="15dp" >
+
+            <RelativeLayout
+                android:id="@+id/rl_patient"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent" >
+
+                <LinearLayout
+                    android:id="@+id/ll_patient"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_alignParentLeft="true"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical" >
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/tv_patient"
+                    style="@style/main_tv_null"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/patient_null"
+                    android:text="@string/device_patient" />
+            </RelativeLayout>
+        </HorizontalScrollView>
+
+        <HorizontalScrollView
+            android:id="@+id/hsv_family"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginBottom="10dp"
+            android:layout_weight="1"
+            android:background="@drawable/device_bg_null"
+            android:fillViewport="true"
+            android:paddingLeft="8dp"
+            android:paddingRight="15dp" >
+
+            <RelativeLayout
+                android:id="@+id/rl_family"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent" >
+
+                <LinearLayout
+                    android:id="@+id/ll_family"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_alignParentLeft="true"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical" >
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/tv_family"
+                    style="@style/main_tv_null"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/family_null"
+                    android:text="@string/device_family" />
+            </RelativeLayout>
+        </HorizontalScrollView>
+
+        <HorizontalScrollView
+            android:id="@+id/hsv_room"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1.2"
+            android:background="@drawable/device_bg_null"
+            android:fillViewport="true"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp" >
+
+            <RelativeLayout
+                android:id="@+id/rl_chat_room"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent" >
+
+                <LinearLayout
+                    android:id="@+id/ll_chat_room"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_alignParentLeft="true"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical" >
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/tv_chat_room"
+                    style="@style/main_tv_null"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/room_null"
+                    android:text="@string/device_room" />
+            </RelativeLayout>
+        </HorizontalScrollView>
+    </LinearLayout>
+
+    <RelativeLayout
+        android:id="@+id/rl2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+         >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"
+
+            android:text="@string/copyright"
+            android:textSize="14sp"
+            android:textColor="@android:color/background_light" />
+    </RelativeLayout>
+
+</RelativeLayout>

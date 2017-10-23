@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <RelativeLayout
+        android:layout_width="300dp"
+        android:layout_height="130dp"
+        android:background="#6D6776"
+        android:layout_centerInParent="true" >
+
+        <TextView
+            android:id="@+id/textView1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginLeft="28dp"
+            android:layout_marginTop="34dp"
+            android:text="摄像头发生异常，请检查摄像头后重新连接"
+            android:textColor="@android:color/white" />
+
+        <Button
+            android:id="@+id/btn_exit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/textView1"
+            android:layout_below="@+id/textView1"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="15dp"
+            android:text="退出系统" />
+
+        <Button
+            android:id="@+id/btn_reconnect"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/btn_exit"
+            android:layout_alignBottom="@+id/btn_exit"
+            android:layout_marginLeft="21dp"
+            android:layout_toRightOf="@+id/btn_exit"
+            android:text="重新连接" />
+
+    </RelativeLayout>
+
+</RelativeLayout>

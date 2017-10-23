@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">ICU_探视端</string>
+    <string name="hintinfo">打开时摄像头失败，请检查摄像头是否可用!!!</string>
+    <string name="icu_startinfo">ICU病房探视系统</string>
+    <string name="apk_info">软件版权归北京神州视翰科技股份有限公司®所有</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string-array name="audio_input_type">
+        <item>板载声卡</item>
+        <item>USB声卡</item>
+    </string-array>
+</resources>

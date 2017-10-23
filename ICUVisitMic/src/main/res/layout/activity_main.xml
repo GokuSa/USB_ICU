@@ -1,0 +1,303 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent" >
+
+    <RelativeLayout
+        android:id="@+id/rl_main"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent" >
+
+        <SurfaceView
+            android:id="@+id/sv_play0"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:visibility="visible" />
+
+        <TextureView
+            android:id="@+id/tv_camera1"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:visibility="gone" />
+
+        <RelativeLayout
+            android:id="@+id/rl_camera"
+            android:layout_width="322dp"
+            android:layout_height="242dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:layout_marginBottom="8dp"
+            android:layout_marginLeft="8dp"
+            android:background="#e0000000" >
+
+            <RelativeLayout
+                android:layout_width="320dp"
+                android:layout_height="240dp"
+                android:layout_centerHorizontal="true"
+                android:layout_centerInParent="true"
+                android:layout_centerVertical="true" >
+
+                <TextureView
+                    android:id="@+id/tv_camera0"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentRight="true"
+                    android:visibility="visible" />
+
+                <SurfaceView
+                    android:id="@+id/sv_play1"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentRight="true"
+                    android:visibility="gone" />
+            </RelativeLayout>
+        </RelativeLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal" >
+
+            <RelativeLayout
+                android:id="@+id/vrl_big"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="11" >
+
+                <SeekBar
+                    android:id="@+id/vsb_volmute_show"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_marginBottom="50dp"
+                    android:layout_marginLeft="40dp"
+                    android:layout_marginRight="40dp"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/vtv_minvolmute"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_above="@+id/vsb_volmute_show"
+                    android:layout_alignLeft="@+id/vsb_volmute_show"
+                    android:layout_marginBottom="20dp"
+                    android:textColor="@android:color/black"
+                    android:textSize="25sp"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/vtv_middlevolmute"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBaseline="@+id/vtv_minvolmute"
+                    android:layout_alignBottom="@+id/vtv_minvolmute"
+                    android:layout_centerHorizontal="true"
+                    android:textColor="@android:color/black"
+                    android:textSize="25sp"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/vtv_maxvolmute"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBaseline="@+id/vtv_middlevolmute"
+                    android:layout_alignBottom="@+id/vtv_middlevolmute"
+                    android:layout_alignRight="@+id/vsb_volmute_show"
+                    android:textColor="@android:color/black"
+                    android:textSize="25sp"
+                    android:visibility="gone" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/vrl_litte"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/sidebar_bg" >
+
+                <ImageView
+                    android:id="@+id/vim_volmue_plus"
+                    android:layout_width="45dp"
+                    android:layout_height="45dp"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="25dp"
+                    android:src="@drawable/volmue_plus_click" />
+
+                <TextView
+                    android:id="@+id/vtv_volmue_plus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/vim_volmue_plus"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="5dp"
+                    android:text="音量 +"
+                    android:textSize="20sp" />
+
+                <ImageView
+                    android:id="@+id/vim_volmue_minus"
+                    android:layout_width="45dp"
+                    android:layout_height="45dp"
+                    android:layout_below="@+id/vtv_volmue_plus"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="15dp"
+                    android:src="@drawable/volmue_minus_click" />
+
+                <TextView
+                    android:id="@+id/vtv_volmue_minus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/vim_volmue_minus"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="5dp"
+                    android:text="音量 -"
+                    android:textSize="20sp" />
+
+                <ImageView
+                    android:id="@+id/vim_mac"
+                    android:layout_width="45dp"
+                    android:layout_height="45dp"
+                    android:layout_below="@+id/vtv_volmue_minus"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="15dp"
+                    android:src="@drawable/open_mac" />
+
+                <TextView
+                    android:id="@+id/vtv_mac"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/vim_mac"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="5dp"
+                    android:text="麦克"
+                    android:textSize="20sp" />
+
+                <ImageView
+                    android:id="@+id/vim_switch"
+                    android:layout_width="45dp"
+                    android:layout_height="45dp"
+                    android:layout_below="@+id/vtv_mac"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="15dp"
+                    android:src="@drawable/switch_ico" />
+
+                <TextView
+                    android:id="@+id/vtv_switch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/vim_switch"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="5dp"
+                    android:text="切换"
+                    android:textSize="20sp" />
+
+                <ImageView
+                    android:id="@+id/vim_hidden"
+                    android:layout_width="45dp"
+                    android:layout_height="45dp"
+                    android:layout_below="@+id/vtv_switch"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="15dp"
+                    android:src="@drawable/nohidden" />
+
+                <TextView
+                    android:id="@+id/vtv_hidden"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/vim_hidden"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="5dp"
+                    android:text="隐藏"
+                    android:textSize="20sp" />
+            </RelativeLayout>
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="220dp"
+            android:layout_height="56dp"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="15dp" >
+
+            <ImageView
+                android:id="@+id/imageView1"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@drawable/timer_bar" />
+
+            <TextView
+                android:id="@+id/tv_downTime"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="剩余时间   00:00:00"
+                android:textColor="@android:color/white"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+        </RelativeLayout>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/rl_wait"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/login_bg"
+        android:keepScreenOn="true" >
+
+        <ImageView
+            android:id="@+id/im_refresh"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true" 
+            android:background="@drawable/loading_bg"
+            android:gravity="center"
+            android:visibility="visible" />
+
+
+
+        <!--
+             <ProgressBar
+            android:id="@+id/pb_waitvisit"
+            style="?android:attr/progressBarStyleLarge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true" />
+        -->
+
+    </RelativeLayout>
+    <RelativeLayout
+        android:layout_width="300dp"
+        android:background="@android:color/white"
+        android:visibility="gone"
+        android:layout_height="120dp">
+        <EditText
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:inputType="number"
+            android:ems="10"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:id="@+id/ed_setProp"/>
+
+        <Button
+            android:text="切换"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginLeft="121dp"
+            android:layout_marginStart="121dp"
+            android:id="@+id/btn_change"/>
+    </RelativeLayout>
+
+</RelativeLayout>

@@ -1,0 +1,173 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+
+    <VideoView
+        android:id="@+id/scan_main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+    <LinearLayout
+        android:id="@+id/ll_tools"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:background="@drawable/scan_bg"
+        android:gravity="center_horizontal"
+        android:visibility="invisible"
+        android:orientation="vertical">
+
+        <Button
+            android:id="@+id/scan_audio_up"
+            android:layout_width="@dimen/dim_button_scan"
+            android:layout_height="@dimen/dim_button_scan"
+            android:layout_marginBottom="5dp"
+            android:layout_marginTop="15dp"
+            android:background="@drawable/scan_audio_up_btn_bg" />
+
+        <TextView
+            android:id="@+id/textView1"
+            style="@style/scan_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="15dp"
+            android:text="@string/audio_up" />
+
+        <Button
+            android:id="@+id/scan_audio_down"
+            android:layout_width="@dimen/dim_button_scan"
+            android:layout_height="@dimen/dim_button_scan"
+            android:layout_marginBottom="5dp"
+            android:background="@drawable/scan_audio_down_btn_bg" />
+
+        <TextView
+            android:id="@+id/textView2"
+            style="@style/scan_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="15dp"
+            android:text="@string/audio_down" />
+
+        <Button
+            android:id="@+id/scan_mac"
+            android:layout_width="@dimen/dim_button_scan"
+            android:layout_height="@dimen/dim_button_scan"
+            android:layout_marginBottom="5dp"
+            android:background="@drawable/mac_close" />
+
+        <TextView
+            android:id="@+id/textView3"
+            style="@style/scan_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="15dp"
+            android:text="@string/mac" />
+
+        <Button
+            android:id="@+id/scan_exchange"
+            android:layout_width="@dimen/dim_button_scan"
+            android:layout_height="@dimen/dim_button_scan"
+            android:layout_marginBottom="5dp"
+            android:text="@string/exchange"
+            android:visibility="gone" />
+
+        <Button
+            android:id="@+id/scan_interrupt"
+            android:layout_width="@dimen/dim_button_scan"
+            android:layout_height="@dimen/dim_button_scan"
+            android:layout_marginBottom="5dp"
+            android:background="@drawable/scan_interrupt_btn_bg" />
+
+        <TextView
+            android:id="@+id/textView4"
+            style="@style/scan_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="15dp"
+            android:text="@string/interrupt" />
+
+        <Button
+            android:id="@+id/scan_exit"
+            android:layout_width="@dimen/dim_button_scan"
+            android:layout_height="@dimen/dim_button_scan"
+            android:layout_marginBottom="5dp"
+            android:background="@drawable/scan_exit_btn_bg" />
+
+        <TextView
+            android:id="@+id/textView5"
+            style="@style/scan_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/exit" />
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/room_time_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:src="@drawable/scan_time_bg" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/room_time_tv"
+        android:layout_alignLeft="@+id/room_time_tv"
+        android:layout_alignRight="@+id/room_time_tv"
+        android:layout_alignTop="@+id/room_time_tv"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/textView6"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:text="@string/time_left"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/scan_time_tv"
+            android:layout_marginLeft="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:gravity="center"
+            android:text="00:12:32"
+            android:textSize="28sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="500dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:background="@color/black_transparent_77101010"
+        android:padding="10dp"
+        android:visibility="gone"
+        android:layout_marginBottom="32dp"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/scan_audio_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:gravity="center"
+            android:text="100"
+            android:textSize="28sp"
+            android:textStyle="bold" />
+
+        <cn.shine.icumaster.widget.AudioBar
+            android:layout_width="400dp"
+            android:layout_marginLeft="10dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/ab" />
+    </LinearLayout>
+
+</RelativeLayout>

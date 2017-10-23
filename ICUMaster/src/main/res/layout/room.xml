@@ -1,0 +1,125 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_margin="5dp"
+    android:background="@drawable/room_bg"
+    tools:context="${relativePackage}.${activityClass}" >
+
+    <cn.shine.icumaster.widget.MarqueeVerticalTextview
+        android:id="@+id/room_name_tv"
+        android:layout_width="10dp"
+        android:layout_height="160dp"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="10dp"
+        android:gravity="center_horizontal"
+        android:text="TextView" />
+
+    <LinearLayout
+        android:id="@+id/linearLayout1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/room_time_tv"
+        android:layout_marginLeft="25dp"
+        android:layout_marginTop="15dp"
+        android:layout_toRightOf="@+id/room_name_tv" >
+
+        <Button
+            android:id="@+id/room_scan_patient_btn"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginRight="5dp"
+            android:background="@drawable/scan_patient_btn_bg" />
+
+        <cn.shine.icumaster.widget.ForceMarqueeTextView
+            android:id="@+id/room_patient_tv"
+            style="@style/room_tv"
+            android:layout_width="90dp"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="25dp"
+            android:text="@string/device_patient" />
+
+        <Button
+            android:id="@+id/room_scan_family_btn"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginRight="5dp"
+            android:background="@drawable/scan_family_btn_bg" />
+
+        <cn.shine.icumaster.widget.ForceMarqueeTextView
+            android:id="@+id/room_family_tv"
+            style="@style/room_tv"
+            android:layout_width="90dp"
+            android:layout_height="wrap_content"
+            android:text="@string/device_family" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/linearLayout1"
+        android:layout_marginLeft="23dp"
+        android:layout_marginTop="12dp"
+        android:layout_toRightOf="@+id/room_name_tv" >
+
+        <Button
+            android:id="@+id/room_start_btn"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginRight="5dp"
+            android:background="@drawable/room_start_btn_bg" />
+
+        <TextView
+            android:id="@+id/room_start_tv"
+            style="@style/room_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="8dp"
+            android:text="@string/start" />
+
+        <Button
+            android:id="@+id/room_stop_btn"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginRight="5dp"
+            android:background="@drawable/room_stop_btn_bg" />
+
+        <TextView
+            android:id="@+id/room_stop_tv"
+            style="@style/room_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="8dp"
+            android:text="@string/stop" />
+
+        <Button
+            android:id="@+id/room_delete_btn"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginRight="5dp"
+            android:background="@drawable/room_delete_btn_bg" />
+
+        <TextView
+            android:id="@+id/room_delete_tv"
+            style="@style/room_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/delete" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/room_time_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignRight="@+id/linearLayout1"
+        android:layout_marginRight="64dp"
+        android:layout_marginTop="11dp"
+        android:text="12:38"
+        android:textColor="@android:color/background_dark"
+        android:textSize="30sp"
+        android:textStyle="bold" />
+
+</RelativeLayout>
