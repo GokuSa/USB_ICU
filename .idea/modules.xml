@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/ICUMaster/ICUMaster.iml" filepath="$PROJECT_DIR$/ICUMaster/ICUMaster.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ICUVisitMic/ICUVisitMic.iml" filepath="$PROJECT_DIR$/ICUVisitMic/ICUVisitMic.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ICU_USB.iml" filepath="$PROJECT_DIR$/ICU_USB.iml" />
+      <module fileurl="file://$PROJECT_DIR$/libvlc_new/libvlc_new.iml" filepath="$PROJECT_DIR$/libvlc_new/libvlc_new.iml" />
+      <module fileurl="file://$PROJECT_DIR$/usbcameralib/usbcameralib.iml" filepath="$PROJECT_DIR$/usbcameralib/usbcameralib.iml" />
+    </modules>
+  </component>
+</project>
