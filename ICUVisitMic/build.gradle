@@ -1,13 +1,13 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion "25.0.2"
+    compileSdkVersion rootProject.ext.compileSdkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
 
     defaultConfig {
         applicationId "com.shine.visitsystem"
         minSdkVersion 21
-        targetSdkVersion 25
+        targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.0"
 
@@ -39,7 +39,9 @@ dependencies {
      //USB摄像头库
     compile project(':usbcameralib')
     compile project(':libvlc_new')
-    compile 'com.android.support:appcompat-v7:25.3.1'
+//    compile 'com.android.support:appcompat-v7:22.2.0'
+    compile "com.android.support:appcompat-v7:$rootProject.ext.libraryVersion"
+
     testCompile 'junit:junit:4.12'
     compile 'io.reactivex.rxjava2:rxjava:2.0.6'
     compile 'io.reactivex.rxjava2:rxandroid:2.0.1'

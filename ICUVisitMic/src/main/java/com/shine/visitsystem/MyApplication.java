@@ -1,20 +1,18 @@
 package com.shine.visitsystem;
 
 import android.app.Application;
+import android.preference.PreferenceManager;
+
+import com.shine.fragment.SettingFragment;
 
 public class MyApplication extends Application {
 	private String TAG = "MyApplication";
 	private static MyApplication instance;
-//	private NetworkNative mNetworkNative=new NetworkNative();
 
 	public  static MyApplication getInstance() {
 		return instance;
 	}
 
-
-	/*public NetworkNative getNetworkNative() {
-		return mNetworkNative;
-	}*/
 
 	@Override
 	public void onCreate() {
@@ -24,7 +22,10 @@ public class MyApplication extends Application {
 //        crashHandler.init(getApplicationContext());
 	}
 
-
+	  //判断视频流是否是高清的 720
+	  public boolean is720P() {
+		return PreferenceManager.getDefaultSharedPreferences(this).getInt(SettingFragment.CAMERA_PREVIEW_SIZE, 0) == 0;
+	}
 
 	@Override
 	public void onLowMemory() {

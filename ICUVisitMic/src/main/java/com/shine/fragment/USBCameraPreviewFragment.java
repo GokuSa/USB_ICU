@@ -3,7 +3,7 @@ package com.shine.fragment;
 
 import android.databinding.DataBindingUtil;
 import android.graphics.SurfaceTexture;
-import android.hardware.Camera;
+import android.hardware.usb.UsbDevice;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -19,12 +19,16 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
+import com.serenegiant.usb.DeviceFilter;
+import com.serenegiant.usb.USBMonitor;
+import com.serenegiant.usb.UVCCamera;
 import com.shine.tools.DialogManager;
 import com.shine.visitsystem.HomeActivity;
 import com.shine.visitsystem.R;
 import com.shine.visitsystem.databinding.FragmentPreviewBinding;
 
 import java.io.File;
+import java.util.List;
 
 import static com.shine.visitsystem.R.id.im_mac;
 import static com.shine.visitsystem.R.id.im_volmue_minus;
@@ -35,14 +39,14 @@ import static com.shine.visitsystem.R.id.im_volmue_plus;
  * A simple {@link Fragment} subclass.
  * 预览页面 需要看到自己的摄像头预览
  */
-public class PreviewFragment extends Fragment implements View.OnClickListener {
-    private static final String TAG = "PreviewFragment";
-
+public class USBCameraPreviewFragment extends Fragment implements View.OnClickListener {
+    private static final String TAG = USBCameraPreviewFragment.class.getSimpleName();
+    private DialogManager mDialogManager=new DialogManager();
     private FragmentPreviewBinding mBinding;
-    private Camera mCamera;
-    private DialogManager mDialogManager = new DialogManager();
+    private USBMonitor mUSBMonitor;
+    private UVCCamera mCamera;
 
-    public PreviewFragment() {
+    public USBCameraPreviewFragment() {
     }
 
 
@@ -63,7 +67,21 @@ public class PreviewFragment extends Fragment implements View.OnClickListener {
         mBinding.imVolmueMinus.setOnClickListener(this);
         mBinding.imVolmuePlus.setOnClickListener(this);
         mBinding.imMac.setOnClickListener(this);
+        setBackground();
+    }
 
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        mDialogManager.showWaitingDialog(getActivity(),"正在打开摄像头");
+//        showWaitingDialog();
+        mUSBMonitor = new USBMonitor(getActivity(), mOnDeviceConnectListener);
+        mUSBMonitor.register();
+
+    }
+
+    //设置指定路径下的背景图，如果没有就显示默认的
+    private void setBackground() {
         File file = new File(HomeActivity.PATH_BG);
         if (file.exists()) {
             Glide.with(this)
@@ -78,40 +96,14 @@ public class PreviewFragment extends Fragment implements View.OnClickListener {
         } else {
             mBinding.srlPreview.setBackgroundResource(R.drawable.login_bg);
         }
-
-        mDialogManager.showWaitingDialog(getActivity(), "正在打开摄像头");
-
     }
-
-    private void openCamera() {
-        new Thread() {
-            @Override
-            public void run() {
-                try {
-                    mCamera = Camera.open();
-                    if (mCamera != null) {
-                        mCamera.setPreviewTexture(mBinding.textureView.getSurfaceTexture());
-                        mCamera.startPreview();
-                        getActivity().runOnUiThread(() ->
-                                mDialogManager.closeWaitingDialog(getActivity())
-                        );
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    getActivity().runOnUiThread(() -> Toast.makeText(getActivity(), "打开摄像头失败", Toast.LENGTH_SHORT).show());
-                    Log.e(TAG, "打开摄像头失败");
-                }
-
-            }
-        }.start();
-
-    }
-
 
     @Override
-    public void onResume() {
-        super.onResume();
-        Log.d(TAG, "onResume() called");
+    public void onStart() {
+        super.onStart();
+        if (mCamera != null) {
+            mCamera.startPreview();
+        }
     }
 
     @Override
@@ -119,7 +111,6 @@ public class PreviewFragment extends Fragment implements View.OnClickListener {
         super.onStop();
         if (mCamera != null) {
             mCamera.stopPreview();
-            mCamera.release();
         }
         mDialogManager.closeWaitingDialog(getActivity());
     }
@@ -127,6 +118,7 @@ public class PreviewFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        mUSBMonitor.unregister();
         Log.d(TAG, "onDestroyView() called");
     }
 
@@ -134,16 +126,84 @@ public class PreviewFragment extends Fragment implements View.OnClickListener {
     public void onDestroy() {
         super.onDestroy();
         Log.d(TAG, "onDestroy() called");
-
+        releaseCamera();
+        if (mUSBMonitor != null) {
+            mUSBMonitor.destroy();
+            mUSBMonitor = null;
+        }
     }
 
+    private void releaseCamera() {
+        if (mCamera != null) {
+            mCamera.destroy();
+            mCamera = null;
+            Log.d(TAG, "releaseCamera -- done");
+        }
+    }
+
+    //申请打开USB摄像头的回调，忽略USB的插拔
+    private final USBMonitor.OnDeviceConnectListener mOnDeviceConnectListener = new USBMonitor.OnDeviceConnectListener() {
+        @Override
+        public void onAttach(final UsbDevice device) {}
+
+        @Override
+        public void onConnect(final UsbDevice device, final USBMonitor.UsbControlBlock ctrlBlock, final boolean createNew) {
+            Log.d(TAG, "onConnect");
+            if (mCamera != null) mCamera.destroy();
+            mCamera = new UVCCamera();
+            new Thread() {
+                @Override
+                public void run() {
+                    mCamera.open(ctrlBlock);
+                    try {
+                        mCamera.setPreviewSize(UVCCamera.DEFAULT_PREVIEW_WIDTH, UVCCamera.DEFAULT_PREVIEW_HEIGHT, UVCCamera.FRAME_FORMAT_YUYV);
+                        mCamera.setPreviewTexture(mBinding.textureView.getSurfaceTexture());
+                        mCamera.startPreview();
+                        getActivity().runOnUiThread(()->{ mDialogManager.closeWaitingDialog(getActivity());});
+                    } catch (final IllegalArgumentException e) {
+                        Log.e(TAG, "run: ", e);
+                    }
+                }
+            }.start();
+
+        }
+
+        @Override
+        public void onDisconnect(final UsbDevice device, final USBMonitor.UsbControlBlock ctrlBlock) {
+            if (mCamera != null) {
+                mCamera.close();
+            }
+        }
+
+        @Override
+        public void onDetach(final UsbDevice device) {
+            Log.d(TAG, "onDetach() called with: device = [" + device + "]");
+        }
+
+        @Override
+        public void onCancel() {}
+    };
+
+    //    请求打开USB摄像头，SystemUI已修改 不会弹出对话框等待用户确认； 直接授权
+    private void openUSUCamera() {
+        final List<DeviceFilter> filter = DeviceFilter.getDeviceFilters(getActivity(), R.xml.device_filter);
+        List<UsbDevice> deviceList = mUSBMonitor.getDeviceList(filter);
+        if (deviceList.size() > 0) {
+            mUSBMonitor.requestPermission(deviceList.get(0));
+        } else {
+//            showCameraErr("没有找到USB摄像头");
+            Toast.makeText(getActivity(), "没有找到USB摄像头", Toast.LENGTH_LONG).show();
+            mDialogManager.closeWaitingDialog(getActivity());
+            Log.e(TAG, "onCreate: no camera device");
+        }
+    }
 
     private TextureView.SurfaceTextureListener mSurfaceTextureListener = new TextureView.SurfaceTextureListener() {
         @Override
         public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
             Log.d(TAG, "onSurfaceTextureAvailable");
-            openCamera();
-
+//            当Surface可用的时候打开摄像头
+            openUSUCamera();
         }
 
         @Override
@@ -153,12 +213,12 @@ public class PreviewFragment extends Fragment implements View.OnClickListener {
 
         @Override
         public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
+            Log.d(TAG, "onSurfaceTextureDestroyed");
             return true;
         }
 
         @Override
         public void onSurfaceTextureUpdated(SurfaceTexture surface) {
-
         }
     };
 
@@ -177,7 +237,6 @@ public class PreviewFragment extends Fragment implements View.OnClickListener {
             case im_volmue_minus:
                 break;
             case im_volmue_plus:
-
                 break;
         }
     }

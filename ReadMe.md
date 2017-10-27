@@ -1,6 +1,6 @@
 ####A64版ICU
-ICUVisitMic 是探视段 需要编码摄像头 发送流和播放流
-- 使用USB Camera，家属端使用Mic，推车使用板载音频
+ICUVisitMic 是探视端 需要编码摄像头 发送流和播放流
+- 使用USB Camera，或者板载Camera 需要在设置页面配置 家属端使用Mic，推车使用板载音频
 - Camera使用android方式编码，解码播放使用VLC
 - 发流使用公司内部的libsendFrameInterface.so库 有待改进
 - usbcameralib 使用USB Camera的库

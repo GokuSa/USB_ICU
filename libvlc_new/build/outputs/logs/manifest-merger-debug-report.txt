@@ -1,0 +1,29 @@
+-- Merging decision tree log ---
+manifest
+ADDED from E:\workspace_lxl\ICU_USB\libvlc_new\AndroidManifest.xml:2:1-5:12
+INJECTED from E:\workspace_lxl\ICU_USB\libvlc_new\AndroidManifest.xml:2:1-5:12
+INJECTED from E:\workspace_lxl\ICU_USB\libvlc_new\AndroidManifest.xml:2:1-5:12
+INJECTED from E:\workspace_lxl\ICU_USB\libvlc_new\AndroidManifest.xml:2:1-5:12
+INJECTED from E:\workspace_lxl\ICU_USB\libvlc_new\AndroidManifest.xml:2:1-5:12
+INJECTED from E:\workspace_lxl\ICU_USB\libvlc_new\AndroidManifest.xml:2:1-5:12
+INJECTED from E:\workspace_lxl\ICU_USB\libvlc_new\AndroidManifest.xml:2:1-5:12
+	package
+		ADDED from E:\workspace_lxl\ICU_USB\libvlc_new\AndroidManifest.xml:3:7-29
+		INJECTED from E:\workspace_lxl\ICU_USB\libvlc_new\AndroidManifest.xml
+		INJECTED from E:\workspace_lxl\ICU_USB\libvlc_new\AndroidManifest.xml
+	android:versionName
+		ADDED from E:\workspace_lxl\ICU_USB\libvlc_new\AndroidManifest.xml:3:54-81
+		INJECTED from E:\workspace_lxl\ICU_USB\libvlc_new\AndroidManifest.xml
+		INJECTED from E:\workspace_lxl\ICU_USB\libvlc_new\AndroidManifest.xml
+	xmlns:android
+		ADDED from E:\workspace_lxl\ICU_USB\libvlc_new\AndroidManifest.xml:2:11-69
+	android:versionCode
+		ADDED from E:\workspace_lxl\ICU_USB\libvlc_new\AndroidManifest.xml:3:30-53
+		INJECTED from E:\workspace_lxl\ICU_USB\libvlc_new\AndroidManifest.xml
+		INJECTED from E:\workspace_lxl\ICU_USB\libvlc_new\AndroidManifest.xml
+uses-sdk
+ADDED from E:\workspace_lxl\ICU_USB\libvlc_new\AndroidManifest.xml:4:5-72
+	android:targetSdkVersion
+		ADDED from E:\workspace_lxl\ICU_USB\libvlc_new\AndroidManifest.xml:4:41-70
+	android:minSdkVersion
+		ADDED from E:\workspace_lxl\ICU_USB\libvlc_new\AndroidManifest.xml:4:15-40

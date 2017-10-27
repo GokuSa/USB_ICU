@@ -28,9 +28,11 @@ public class SettingFragment extends DialogFragment  {
     public static final String AUDIO_OUTPUT_TYPE = "audio_output_type";
     public static final String AUDIO_DELAY = "audio_delay";
     public static final String CAMERA_ENCODE_FRAME = "camera_encode_frame";
+    public static final String CAMERA_TYPE = "camera_type";
+    //对方摄像头编码大小 为了vlc全屏播放
+    public static final String CAMERA_PREVIEW_SIZE = "camera_preview_size";
 
     private FragmentSettingBinding mBinding;
-    private AudioSettingViewModel mAudioSettingViewModel;
 
     public static SettingFragment newInstance() {
         SettingFragment fragment = new SettingFragment();
@@ -49,8 +51,8 @@ public class SettingFragment extends DialogFragment  {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mAudioSettingViewModel = new AudioSettingViewModel(this);
-        mBinding.setViewModel(mAudioSettingViewModel);
+        SettingViewModel settingViewModel = new SettingViewModel(this);
+        mBinding.setViewModel(settingViewModel);
 
     }
 

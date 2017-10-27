@@ -1,25 +1,9 @@
-/*
- * Copyright 2013 Google Inc. All rights reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package com.shine.fragment;
 
 import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.graphics.SurfaceTexture;
-import android.hardware.Camera;
+import android.hardware.usb.UsbDevice;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.opengl.EGL14;
@@ -27,9 +11,9 @@ import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -39,8 +23,11 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 import android.widget.VideoView;
 
+import com.serenegiant.usb.DeviceFilter;
+import com.serenegiant.usb.USBMonitor;
+import com.serenegiant.usb.UVCCamera;
+import com.shine.tools.DialogManager;
 import com.shine.tools.HttpGetUtils;
-import com.shine.usbcameralib.gles.CameraUtils;
 import com.shine.usbcameralib.gles.FullFrameRect;
 import com.shine.usbcameralib.gles.Texture2dProgram;
 import com.shine.usbcameralib.gles.TextureMovieEncoder;
@@ -55,28 +42,31 @@ import org.videolan.libvlc.Media;
 import org.videolan.libvlc.MediaPlayer;
 
 import java.io.File;
-import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.text.SimpleDateFormat;
+import java.util.List;
 import java.util.Locale;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
-import static com.shine.fragment.VideoTalkFragment.CameraHandler.MSG_PLAY_LIVE;
-import static com.shine.fragment.VideoTalkFragment.CameraHandler.MSG_START_COUNT;
+import static com.shine.fragment.USBCameraVideoTalkFragment.CameraHandler.MSG_HIDE_SIZEBAR;
+import static com.shine.fragment.USBCameraVideoTalkFragment.CameraHandler.MSG_PLAY_LIVE;
+import static com.shine.fragment.USBCameraVideoTalkFragment.CameraHandler.MSG_START_COUNT;
 
 /**
  * 视频对讲页面，Camera预览和编码部分参考Grafika
  * 使用VLC播放自定义视频流，在Camera开始编码后一段时间才开始，最大限度保证转发服务器已经接受到编码流
  * 如果失败 隔几秒重新拨
  */
-public class VideoTalkFragment extends Fragment
+public class USBCameraVideoTalkFragment extends Fragment
         implements SurfaceTexture.OnFrameAvailableListener {
     public static final String TAG = "VideoTalkFragment";
     private static final String ARG_KEY_URL = "url";
     private static final String ARG_KEY_OVER_TIME = "over_time";
+//    private static final float RATIO = 9f / 16;
     private AudioManager mAudioManager;
+    private DialogManager mDialogManager = new DialogManager();
     /**
      * 当前音量
      */
@@ -91,12 +81,10 @@ public class VideoTalkFragment extends Fragment
     private boolean canTalk = true;
     private GLSurfaceView mGLView;
     private CameraSurfaceRenderer mRenderer;
-    private Camera mCamera;
 
     private CameraHandler mCameraHandler;
 
     private boolean mRecordingEnabled;
-    private int mCameraPreviewWidth, mCameraPreviewHeight;
     private TextureMovieEncoder sVideoEncoder = new TextureMovieEncoder();
     private int mWScreen;
     private int mHScreen;
@@ -104,12 +92,14 @@ public class VideoTalkFragment extends Fragment
     private MediaPlayer mMediaPlayer;
     private boolean isCameraPreviewVisible = true;
     private VideoView mCurrentVideo;
+    private USBMonitor mUSBMonitor;
+    private View mSideBar;
 
-    public static VideoTalkFragment newInstance(String url, String overTime) {
+    public static USBCameraVideoTalkFragment newInstance(String url, String overTime) {
         Bundle args = new Bundle();
         args.putString(ARG_KEY_URL, url);
         args.putString(ARG_KEY_OVER_TIME, overTime);
-        VideoTalkFragment fragment = new VideoTalkFragment();
+        USBCameraVideoTalkFragment fragment = new USBCameraVideoTalkFragment();
         fragment.setArguments(args);
         return fragment;
     }
@@ -136,19 +126,27 @@ public class VideoTalkFragment extends Fragment
         mCameraHandler = new CameraHandler(this);
         mRecordingEnabled = sVideoEncoder.isRecording();
 
+        mCurrentVideo = mBinding.videoView;
+//        mCurrentVideo.setZOrderMediaOverlay(true);
+
         mGLView = mBinding.cameraPreviewSurfaceView;
         mGLView.setZOrderMediaOverlay(true);
-
-        mGLView.setEGLContextClientVersion(2);     // select GLES 2.0
+        mGLView.setEGLContextClientVersion(2);
         mRenderer = new CameraSurfaceRenderer(mCameraHandler, sVideoEncoder, outputFile);
         mGLView.setRenderer(mRenderer);
         mGLView.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
+
         mBinding.ivVolumeMinus.setOnClickListener(mClickListener);
         mBinding.ivVolumePlus.setOnClickListener(mClickListener);
         mBinding.ivMac.setOnClickListener(mClickListener);
         mBinding.ivHidden.setOnClickListener(mClickListener);
         mBinding.ivSwitch.setOnClickListener(mClickListener);
-        setupMediaPlayer();
+        mBinding.parent.setOnClickListener(mClickListener);
+        mSideBar = view.findViewById(R.id.sideBar);
+
+        DisplayMetrics dm = getResources().getDisplayMetrics();
+        mWScreen = dm.widthPixels;
+        mHScreen = dm.heightPixels;
         Log.d(TAG, "onCreate complete: " + this);
     }
 
@@ -157,9 +155,20 @@ public class VideoTalkFragment extends Fragment
         super.onActivityCreated(savedInstanceState);
         mAudioManager = (AudioManager) getActivity().getSystemService(Context.AUDIO_SERVICE);
         int volume = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+        Log.d(TAG, "mCurrentVolume:" + volume);
         mMaxVolume = mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
         //转化成百分制格式
         mCurrentVolume = volume * 100 / mMaxVolume;
+        setEndTime();
+        //延迟播放对方视频，因为需要等待摄像头编码发送成功
+        mCameraHandler.sendEmptyMessageDelayed(MSG_PLAY_LIVE, 8000);
+        mUSBMonitor = new USBMonitor(getActivity(), mOnDeviceConnectListener);
+        //显示等待对方视频对话框
+        mDialogManager.showWaitingDialog(getActivity(), "正在连接");
+    }
+
+    //设置对话的时长
+    private void setEndTime() {
         //结束时间
         String over_time = getArguments().getString(ARG_KEY_OVER_TIME, "");
         try {
@@ -169,63 +178,39 @@ public class VideoTalkFragment extends Fragment
             if (time_margin > 0) {
                 mCameraHandler.obtainMessage(MSG_START_COUNT, time_margin, 0).sendToTarget();
             } else {
-                Log.d(TAG, "onActivityCreated: get old time");
+                Log.d(TAG, "onActivityCreated: get invalid time");
             }
         } catch (NumberFormatException e) {
             Log.e(TAG, "onActivityCreated: 解析结束时间错误");
         }
-        //延迟播放对方视频，因为需要等待摄像头编码发送成功
-        mCurrentVideo = mBinding.videoView;
-        mCameraHandler.sendEmptyMessageDelayed(MSG_PLAY_LIVE, 8000);
-        //显示等待对方视频对话框
-        showWaitingDialog();
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        openCamera(1280, 720);
+        mUSBMonitor.register();
+        openUSUCamera();
         mGLView.onResume();
-        mGLView.queueEvent(new Runnable() {
-            @Override
-            public void run() {
-                mRenderer.setCameraPreviewSize(mCameraPreviewWidth, mCameraPreviewHeight);
-            }
+        mGLView.queueEvent(() -> {
+            mRenderer.setCameraPreviewSize(UVCCamera.DEFAULT_PREVIEW_WIDTH, UVCCamera.DEFAULT_PREVIEW_HEIGHT);
         });
     }
 
-    @Override
-    public void onResume() {
-        Log.d(TAG, "onResume -- ");
-        super.onResume();
-        Log.d(TAG, "onResume complete: " + this);
-    }
-
-    @Override
-    public void onPause() {
-        Log.d(TAG, "onPause -- ");
-        super.onPause();
-        Log.d(TAG, "onPause complete");
-    }
 
     @Override
     public void onStop() {
         super.onStop();
-        closeWaitingDialog();
+        mUSBMonitor.unregister();
         releaseCamera();
-        mGLView.queueEvent(new Runnable() {
-            @Override
-            public void run() {
-                // Tell the renderer that it's about to be paused so it can clean up.
-                mRenderer.notifyPausing();
-            }
-        });
+        mGLView.queueEvent(()->{mRenderer.notifyPausing();});
         mGLView.onPause();
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        mDialogManager.closeWaitingDialog(getActivity());
+        mDialogManager.closeCameraErrDialog(getActivity());
     }
 
     @Override
@@ -233,8 +218,56 @@ public class VideoTalkFragment extends Fragment
         Log.d(TAG, "onDestroy");
         mCameraHandler.invalidateHandler();
         mCameraHandler.removeCallbacksAndMessages(null);
+        if (mUSBMonitor != null) {
+            mUSBMonitor.destroy();
+            mUSBMonitor = null;
+        }
         super.onDestroy();
     }
+
+    private UVCCamera mCamera;
+    private final USBMonitor.OnDeviceConnectListener mOnDeviceConnectListener = new USBMonitor.OnDeviceConnectListener() {
+        @Override
+        public void onAttach(final UsbDevice device) {
+            Log.d(TAG, "onAttach: ");
+        }
+
+        @Override
+        public void onConnect(final UsbDevice device, final USBMonitor.UsbControlBlock ctrlBlock, final boolean createNew) {
+            Log.d(TAG, "onConnect");
+            if (mCamera != null) mCamera.destroy();
+            mCamera = new UVCCamera();
+            new Thread() {
+                @Override
+                public void run() {
+                    mCamera.open(ctrlBlock);
+                    try {
+//                        mCamera.setPreviewSize(UVCCamera.DEFAULT_PREVIEW_WIDTH, UVCCamera.DEFAULT_PREVIEW_HEIGHT, UVCCamera.FRAME_FORMAT_YUYV);
+                        mCamera.setPreviewSize(640, 480, UVCCamera.FRAME_FORMAT_YUYV);
+                    } catch (final IllegalArgumentException e) {
+                        Log.e(TAG, "run: ", e);
+                    }
+                }
+            }.start();
+        }
+
+        @Override
+        public void onDisconnect(UsbDevice device, USBMonitor.UsbControlBlock ctrlBlock) {
+            if (mCamera != null) {
+                mCamera.close();
+            }
+        }
+
+
+        @Override
+        public void onDetach(final UsbDevice device) {
+            Log.d(TAG, "onDetach() called with: device = [" + device + "]");
+        }
+
+        @Override
+        public void onCancel() {
+        }
+    };
 
     public void stopRecording() {
         Log.d(TAG, "stopRecording() called");
@@ -242,20 +275,15 @@ public class VideoTalkFragment extends Fragment
         mCameraHandler.invalidateHandler();
         mCameraHandler.removeCallbacksAndMessages(null);
         stopPlayStream();
-        closeWaitingDialog();
-        mGLView.queueEvent(new Runnable() {
-            @Override
-            public void run() {
-                // notify the renderer that we want to change the encoder's state
-                mRenderer.changeRecordingState(false);
-            }
-        });
+        mDialogManager.closeWaitingDialog(getActivity());
+        mGLView.queueEvent(()->{ mRenderer.changeRecordingState(false);});
     }
 
 
     private View.OnClickListener mClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
+            handleSideBarStatus();
             switch (v.getId()) {
                 case R.id.iv_volume_minus:
                     mCurrentVolume = Math.max(0, mCurrentVolume - 5);
@@ -291,7 +319,8 @@ public class VideoTalkFragment extends Fragment
                     float density = getResources().getDisplayMetrics().density;
                     RelativeLayout.LayoutParams layoutParams;
                     if (isCameraPreviewVisible) {
-                        layoutParams = new RelativeLayout.LayoutParams((int) (320 * density), (int) (240 * density));
+                        layoutParams = new RelativeLayout.LayoutParams((int) (320 * density), (int) (180 * density));
+                        layoutParams.setMarginStart((int)(18*density));
                     } else {
                         layoutParams = new RelativeLayout.LayoutParams(1, 1);
                     }
@@ -299,7 +328,7 @@ public class VideoTalkFragment extends Fragment
                     mGLView.setLayoutParams(layoutParams);
                     break;
                 case R.id.iv_switch:
-                    handleSwitch();
+//                    handleSwitch();
                     break;
 
             }
@@ -307,8 +336,25 @@ public class VideoTalkFragment extends Fragment
     };
 
 
+
+    //处理侧边栏的显示和隐藏，播放成功后，点击页面及按钮都要显示
+    private void handleSideBarStatus() {
+        Log.d(TAG, "handleSideBarStatus: ");
+//        mBinding.sideBar.setVisibility(View.VISIBLE);
+        mSideBar.setVisibility(View.VISIBLE);
+        mCameraHandler.removeMessages(MSG_HIDE_SIZEBAR);
+        mCameraHandler.sendEmptyMessageDelayed(MSG_HIDE_SIZEBAR, 8 * 1000);
+    }
+
+    private void hideSideBar() {
+        Log.d(TAG, "hideSideBar: ");
+//        mBinding.sideBar.setVisibility(View.INVISIBLE);
+        mSideBar.setVisibility(View.INVISIBLE);
+    }
+
     private void handleSwitch() {
         Log.d(TAG, "handleSwitch: ");
+
     }
 
     /**
@@ -325,67 +371,25 @@ public class VideoTalkFragment extends Fragment
     }
 
 
-    /**
-     * Opens a camera, and attempts to establish preview mode at the specified width and height.
-     * <p>
-     * Sets mCameraPreviewWidth and mCameraPreviewHeight to the actual width/height of the preview.
-     */
-    private void openCamera(int desiredWidth, int desiredHeight) {
-        try {
-            if (mCamera != null) {
-                throw new RuntimeException("camera already initialized");
-            }
-            Camera.CameraInfo info = new Camera.CameraInfo();
-            // Try to find a front-facing camera (e.g. for videoconferencing).
-            int numCameras = Camera.getNumberOfCameras();
-            for (int i = 0; i < numCameras; i++) {
-                Camera.getCameraInfo(i, info);
-                if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
-                    mCamera = Camera.open(i);
-                    break;
-                }
-            }
-            if (mCamera == null) {
-                Log.d(TAG, "No front-facing camera found; opening default");
-                mCamera = Camera.open();    // opens first back-facing camera
-            }
-            if (mCamera == null) {
-                throw new RuntimeException("Unable to open camera");
-            }
-            Camera.Parameters parms = mCamera.getParameters();
-            CameraUtils.choosePreviewSize(parms, desiredWidth, desiredHeight);
-            parms.setRecordingHint(true);
-            mCamera.setParameters(parms);
-            int[] fpsRange = new int[2];
-            Camera.Size mCameraPreviewSize = parms.getPreviewSize();
-            parms.getPreviewFpsRange(fpsRange);
-            mCameraPreviewWidth = mCameraPreviewSize.width;
-            mCameraPreviewHeight = mCameraPreviewSize.height;
-        } catch (RuntimeException e) {
-            e.printStackTrace();
-            /*Toast.makeText(MyApplication.getInstance(), "相机故障，请检查摄像头", Toast.LENGTH_LONG).show();
-            getActivity().finish();*/
-            showCameraErr();
+    //    请求打开USB摄像头，SystemUI已修改 不会弹出对话框等待用户确认； 直接授权
+    private void openUSUCamera() {
+        final List<DeviceFilter> filter = DeviceFilter.getDeviceFilters(getActivity(), R.xml.device_filter);
+        List<UsbDevice> deviceList = mUSBMonitor.getDeviceList(filter);
+        if (deviceList.size() > 0) {
+            mUSBMonitor.requestPermission(deviceList.get(0));
+        } else {
+            mDialogManager.showCameraErrDialog(getActivity(), "没有找到USB摄像头");
+            Log.e(TAG, "onCreate: no camera device");
         }
     }
 
-    private void showCameraErr() {
-        FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();
-        CameraErrDialog camera_err = (CameraErrDialog) getActivity().getSupportFragmentManager().findFragmentByTag("camera_err");
-        if (camera_err != null) {
-            fragmentTransaction.remove(camera_err);
-        }
-        camera_err = CameraErrDialog.newInstance("相机故障，请检查摄像头");
-        camera_err.show(fragmentTransaction, "camera_err");
-    }
 
     /**
      * Stops camera preview, and releases the camera to the system.
      */
     private void releaseCamera() {
         if (mCamera != null) {
-            mCamera.stopPreview();
-            mCamera.release();
+            mCamera.destroy();
             mCamera = null;
             Log.d(TAG, "releaseCamera -- done");
         }
@@ -393,38 +397,24 @@ public class VideoTalkFragment extends Fragment
 
     /**
      * Connects the SurfaceTexture to the Camera preview output, and starts the preview.
+     * 连接SurfaceTexture到Camera的输出，开始预览并编码
      */
     private void handleSetSurfaceTexture(SurfaceTexture st) {
-        st.setOnFrameAvailableListener(this);
+        Log.d(TAG, "handleSetSurfaceTexture: ");
         if (mCamera != null) {
-            try {
-                mCamera.setPreviewTexture(st);
-            } catch (IOException ioe) {
-                throw new RuntimeException(ioe);
-            }
+            st.setOnFrameAvailableListener(this);
+            mCamera.setPreviewTexture(st);
             mCamera.startPreview();
-        }
-
-        Log.d(TAG, "handleSetSurfaceTexture: start preview");
-        mGLView.queueEvent(new Runnable() {
-            @Override
-            public void run() {
-                // notify the renderer that we want to change the encoder's state
+            mGLView.queueEvent(()->{
                 mRenderer.changeRecordingState(true);
-            }
-        });
+            });
+        }
     }
 
 
     @Override
     public void onFrameAvailable(SurfaceTexture st) {
         mGLView.requestRender();
-    }
-
-    private void setupMediaPlayer() {
-        DisplayMetrics dm = getResources().getDisplayMetrics();
-        mWScreen = dm.widthPixels;
-        mHScreen = dm.heightPixels;
     }
 
     private void playVideoStream() {
@@ -449,8 +439,6 @@ public class VideoTalkFragment extends Fragment
         mMediaPlayer.play();
 
     }
-
-
 
     private void stopPlayStream() {
         Log.d(TAG, "stopPlayStream() called");
@@ -487,13 +475,14 @@ public class VideoTalkFragment extends Fragment
                     Log.d(TAG, "playing");
                     HomeActivity homeActivity = (HomeActivity) getActivity();
                     homeActivity.startTalk();
-                    closeWaitingDialog();
+                    mDialogManager.closeWaitingDialog(getActivity());
+                    //播放成功后显示侧边栏
+                    handleSideBarStatus();
                     break;
 
             }
         }
     };
-
 
     /**
      * Handles camera operation requests from other threads.  Necessary because the Camera
@@ -508,6 +497,8 @@ public class VideoTalkFragment extends Fragment
         public static final int MSG_PLAY_LIVE = 2;
         public static final int MSG_START_COUNT = 3;
         public static final int MSG_MIC_ENABLE = 4;
+        public static final int MSG_HIDE_SIZEBAR = 5;
+
         /**
          * 默认通话时长30分，换算成以秒为单位
          */
@@ -515,9 +506,9 @@ public class VideoTalkFragment extends Fragment
         private SimpleDateFormat mSimpleDateFormat = new SimpleDateFormat("00:mm:ss", Locale.CHINA);
 
         // Weak reference to the Activity; only access this from the UI thread.
-        private WeakReference<VideoTalkFragment> mWeakActivity;
+        private WeakReference<USBCameraVideoTalkFragment> mWeakActivity;
 
-        public CameraHandler(VideoTalkFragment talkFragment2) {
+        public CameraHandler(USBCameraVideoTalkFragment talkFragment2) {
             mWeakActivity = new WeakReference<>(talkFragment2);
         }
 
@@ -535,7 +526,7 @@ public class VideoTalkFragment extends Fragment
         public void handleMessage(Message inputMessage) {
             int what = inputMessage.what;
 
-            VideoTalkFragment fragment = mWeakActivity.get();
+            USBCameraVideoTalkFragment fragment = mWeakActivity.get();
             if (fragment == null) {
                 Log.w(TAG, "CameraHandler.handleMessage: activity is null");
                 return;
@@ -561,6 +552,9 @@ public class VideoTalkFragment extends Fragment
                     break;
                 case MSG_MIC_ENABLE:
                     fragment.enableSwitchMic();
+                    break;
+                case MSG_HIDE_SIZEBAR:
+                    fragment.hideSideBar();
                     break;
             }
         }
@@ -591,7 +585,7 @@ public class VideoTalkFragment extends Fragment
         private static final int RECORDING_ON = 1;
         private static final int RECORDING_RESUMED = 2;
 
-        private CameraHandler mCameraHandler;
+        private USBCameraVideoTalkFragment.CameraHandler mCameraHandler;
         private TextureMovieEncoder mVideoEncoder;
         private File mFileOutput;
 
@@ -617,7 +611,7 @@ public class VideoTalkFragment extends Fragment
          * @param cameraHandler Handler for communicating with UI thread
          * @param movieEncoder  video encoder object
          */
-        public CameraSurfaceRenderer(CameraHandler cameraHandler,
+        public CameraSurfaceRenderer(USBCameraVideoTalkFragment.CameraHandler cameraHandler,
                                      TextureMovieEncoder movieEncoder, File fileOutput) {
             mCameraHandler = cameraHandler;
             mVideoEncoder = movieEncoder;
@@ -703,7 +697,7 @@ public class VideoTalkFragment extends Fragment
 
             // Tell the UI thread to enable the camera preview.
             mCameraHandler.sendMessage(mCameraHandler.obtainMessage(
-                    CameraHandler.MSG_SET_SURFACE_TEXTURE, mSurfaceTexture));
+                    USBCameraVideoTalkFragment.CameraHandler.MSG_SET_SURFACE_TEXTURE, mSurfaceTexture));
 
 
         }
@@ -716,13 +710,7 @@ public class VideoTalkFragment extends Fragment
 
         @Override
         public void onDrawFrame(GL10 unused) {
-//            if (VERBOSE) Log.d(TAG, "onDrawFrame tex=" + mTextureId);
-//            boolean showBox = false;
-
-            // Latch the latest frame.  If there isn't anything new, we'll just re-use whatever
-            // was there before.
             mSurfaceTexture.updateTexImage();
-
             // If the recording state is changing, take care of it here.  Ideally we wouldn't
             // be doing all this in onDrawFrame(), but the EGLContext sharing with GLSurfaceView
             // makes it hard to do elsewhere.
@@ -731,8 +719,9 @@ public class VideoTalkFragment extends Fragment
                     case RECORDING_OFF:
                         Log.d(TAG, "START recording");
                         // start recording
-                        mVideoEncoder.startRecording(new TextureMovieEncoder.EncoderConfig(mFileOutput, 640, 480, 1000000, EGL14.eglGetCurrentContext()));
-                        Log.d(TAG, "1M编码");
+                        float bitRate = PreferenceManager.getDefaultSharedPreferences(getActivity()).getFloat(SettingFragment.CAMERA_ENCODE_FRAME, 1f);
+                        mVideoEncoder.startRecording(new TextureMovieEncoder.EncoderConfig(mFileOutput, mIncomingWidth, mIncomingHeight, (int)(bitRate*1000000), EGL14.eglGetCurrentContext()));
+                        Log.d(TAG, "码率 "+bitRate);
                         mRecordingStatus = RECORDING_ON;
                         break;
                     case RECORDING_RESUMED:
@@ -786,40 +775,12 @@ public class VideoTalkFragment extends Fragment
                 mFullScreen.getProgram().setTexSize(mIncomingWidth, mIncomingHeight);
                 mIncomingSizeUpdated = false;
             }
-
             // Draw the video frame.
-
             mSurfaceTexture.getTransformMatrix(mSTMatrix);
             mFullScreen.drawFrame(mTextureId, mSTMatrix);
         }
     }
 
-
-    private void showWaitingDialog() {
-        HomeActivity activity = (HomeActivity) getActivity();
-        if (activity == null) {
-            return;
-        }
-        FragmentTransaction fragmentTransaction = activity.getSupportFragmentManager().beginTransaction();
-        WaitingDialog waitingDialog = (WaitingDialog) getActivity().getSupportFragmentManager().findFragmentByTag("waiting_info");
-        if (waitingDialog != null) {
-            fragmentTransaction.remove(waitingDialog);
-        }
-        waitingDialog = WaitingDialog.newInstance("正在连接对方");
-        waitingDialog.show(fragmentTransaction, "waiting_info");
-    }
-
-    //关闭等待对话框，不要修改tag，要确保和showWaitingDialog（）中tag一致
-    private void closeWaitingDialog() {
-        HomeActivity activity = (HomeActivity) getActivity();
-        if (activity == null) {
-            return;
-        }
-        WaitingDialog waitingDialog = (WaitingDialog) activity.getSupportFragmentManager().findFragmentByTag("waiting_info");
-        if (waitingDialog != null) {
-            waitingDialog.dismiss();
-        }
-    }
 }
 
 

@@ -18,6 +18,8 @@ import static com.shine.fragment.SettingFragment.AUDIO_INPUT_DISTANCE;
 import static com.shine.fragment.SettingFragment.AUDIO_INPUT_TYPE;
 import static com.shine.fragment.SettingFragment.AUDIO_OUTPUT_TYPE;
 import static com.shine.fragment.SettingFragment.CAMERA_ENCODE_FRAME;
+import static com.shine.fragment.SettingFragment.CAMERA_PREVIEW_SIZE;
+import static com.shine.fragment.SettingFragment.CAMERA_TYPE;
 
 /**
  * author:
@@ -26,19 +28,23 @@ import static com.shine.fragment.SettingFragment.CAMERA_ENCODE_FRAME;
  * 类描述：音频相关设置 拾音距离 拾音效果 拾音类型 放音类型
  */
 
-public class AudioSettingViewModel {
+public class SettingViewModel {
     private static final String TAG = "AudioSettingViewModel";
     public final ObservableInt mAudioEffect = new ObservableInt(0);
     public final ObservableInt mAudioInputType = new ObservableInt(0);
     public final ObservableInt mAudioOutputType = new ObservableInt(0);
     public final ObservableInt mAudioInputDistance = new ObservableInt(0);
+    //摄像头类型 默认USB
+    public final ObservableInt mCameraType = new ObservableInt(0);
+    //摄像头编码类型 默认1280*720
+    public final ObservableInt mCameraPerviewSize = new ObservableInt(0);
     //摄像头编码码率率
     public final ObservableFloat mCameraEncodeBitRate = new ObservableFloat(0);
     //音频延时 在USB 摄像头编码时，视频帧延迟与音频不同步 所以添加此设置 使口型一致
     public final ObservableField<String> mAudioDelay=new ObservableField<>();
     private DialogFragment mDialogFragment;
 
-    public AudioSettingViewModel(DialogFragment dialogFragment) {
+    public SettingViewModel(DialogFragment dialogFragment) {
         mDialogFragment = dialogFragment;
         final SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(MyApplication.getInstance());
         //设置音频效果
@@ -60,6 +66,13 @@ public class AudioSettingViewModel {
         int audioDelay = sharedPreferences.getInt(AUDIO_DELAY, 160);
         mAudioDelay.set(String.valueOf(audioDelay));
 
+        //摄像头类型 0 USB  1-》板载
+        int cameraType = sharedPreferences.getInt(CAMERA_TYPE, 0);
+        mCameraType.set(cameraType);
+
+        //对方编码输出 0->1280*720  1->640*480
+        int cameraPreviewSize = sharedPreferences.getInt(CAMERA_PREVIEW_SIZE, 0);
+        mCameraPerviewSize.set(cameraPreviewSize);
     }
 
     public void onRadioButtonClick(View view) {
@@ -101,6 +114,18 @@ public class AudioSettingViewModel {
             case R.id.rb_three_m:
                 mCameraEncodeBitRate.set(3f);
                 break;
+            case R.id.rb_camera_usb:
+                mCameraType.set(0);
+                break;
+            case R.id.rb_camera_internal:
+                mCameraType.set(1);
+                break;
+            case R.id.rb_camera_previewsize1:
+                mCameraPerviewSize.set(0);
+                break;
+            case R.id.rb_camera_previewsize2:
+                mCameraPerviewSize.set(1);
+                break;
         }
 
     }
@@ -138,6 +163,8 @@ public class AudioSettingViewModel {
                 .putInt(AUDIO_INPUT_DISTANCE, mAudioInputDistance.get())
                 .putFloat(CAMERA_ENCODE_FRAME, mCameraEncodeBitRate.get())
                 .putInt(AUDIO_DELAY, audioDelay)
+                .putInt(CAMERA_TYPE, mCameraType.get())
+                .putInt(CAMERA_PREVIEW_SIZE, mCameraPerviewSize.get())
                 .apply();
     }
 
