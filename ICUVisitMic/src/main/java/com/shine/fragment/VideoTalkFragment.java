@@ -132,6 +132,7 @@ public class VideoTalkFragment extends Fragment
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        //没有使用，仅为了与参考项目保持类结构一致
         File outputFile = new File("extdata/test.mp4");
         mCameraHandler = new CameraHandler(this);
         mRecordingEnabled = sVideoEncoder.isRecording();

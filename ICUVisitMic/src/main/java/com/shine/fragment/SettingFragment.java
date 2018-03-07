@@ -54,6 +54,7 @@ public class SettingFragment extends DialogFragment  {
         SettingViewModel settingViewModel = new SettingViewModel(this);
         mBinding.setViewModel(settingViewModel);
 
+
     }
 
     @Override

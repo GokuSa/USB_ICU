@@ -53,7 +53,7 @@ import static com.shine.usbcameralib.gles.TextureMovieEncoder.mNetworkNative;
  * 检查摄像头有效性，是否存在，是否有网络连接
  * 编码摄像头，发送到转发服务器
  */
-public class HomeActivity extends AppCompatActivity implements ActivityCompat.OnRequestPermissionsResultCallback{
+public class HomeActivity extends AppCompatActivity implements ActivityCompat.OnRequestPermissionsResultCallback {
     private static final String TAG = "HomeActivity";
     public static final String PATH_LOGO = "/extdata/work/show/system/logo.png";
     public static final String PATH_BG = "/extdata/work/show/system/bg.png";
@@ -66,7 +66,7 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
     private String mHeartBeatingUrl = "";
     private volatile boolean mStartHeartBeating = true;
     private String mRoomInfoUrl;
-
+    private static final int SHUTDOWN_DELAY = 30*60 * 1000;
     private boolean isVideoTalkStarted = false;
 
     @SuppressLint("HandlerLeak")
@@ -83,7 +83,7 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
                         if (fragment != null) {
                             fragment.stopRecording();
                         }
-                    }else{
+                    } else {
                         VideoTalkFragment fragment = (VideoTalkFragment) getSupportFragmentManager().findFragmentByTag("video_talk");
                         if (fragment != null) {
                             fragment.stopRecording();
@@ -93,6 +93,7 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
                     postDelayed(() -> {
                         showHome();
                     }, 1500);
+                    sendEmptyMessageDelayed(Contast.SHUTDOWN, SHUTDOWN_DELAY);
                     break;
                 case Contast.STARTMEETING:
                     //进入视频对话
@@ -100,6 +101,7 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
                         Log.d(TAG, "MEETING is started");
                         return;
                     }
+                    removeMessages(Contast.SHUTDOWN);
                     isVideoTalkStarted = true;
                     Log.d(TAG, "STARTMEETING");
                     Bundle startBundle = msg.getData();
@@ -111,6 +113,12 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
                         url = url.replaceAll("shine_av_stream://", "shine_net://tcp");
                     }
                     startVideoTalk(url, over_time);
+                    break;
+                case Contast.SHUTDOWN:
+                    Intent intent = new Intent("android.intent.action.ACTION_REQUEST_SHUTDOWN");
+                    intent.putExtra("android.intent.extra.KEY_CONFIRM", false);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
                     break;
             }
         }
@@ -137,7 +145,7 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
         return ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED;
     }
 
-//    请求摄像头权限
+    //    请求摄像头权限
     private void requestCameraPermission() {
         if (!hasPermission()) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, 1);
@@ -151,7 +159,7 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
             if (grantResults.length != 1 || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
                 Toast.makeText(this, "没有摄像头权限", Toast.LENGTH_SHORT).show();
             }
-        }else{
+        } else {
             super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
     }
@@ -343,13 +351,13 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
             Fragment fragment;
             if (isUsbCamera()) {
                 fragment = new USBCameraPreviewFragment();
-            }else{
-                fragment =  new PreviewFragment();
+            } else {
+                fragment = new PreviewFragment();
             }
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.container, fragment)
                     .commit();
-        }else{
+        } else {
             Toast.makeText(this, "没有摄像头权限", Toast.LENGTH_SHORT).show();
             requestCameraPermission();
         }
@@ -368,23 +376,22 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
             Fragment fragment;
             if (isUsbCamera()) {
                 fragment = USBCameraVideoTalkFragment.newInstance(url, over_time);
-            }else{
+            } else {
                 fragment = VideoTalkFragment.newInstance(url, over_time);
             }
             getSupportFragmentManager().beginTransaction()
 //                    .replace(R.id.container, USBCameraVideoTalkFragment.newInstance(url, over_time), "video_talk")
                     .replace(R.id.container, fragment, "video_talk")
                     .commit();
-        }else{
+        } else {
             Toast.makeText(this, "没有摄像头权限", Toast.LENGTH_SHORT).show();
             requestCameraPermission();
         }
     }
 
     private boolean isUsbCamera() {
-        return PreferenceManager.getDefaultSharedPreferences(this).getInt(SettingFragment.CAMERA_TYPE,0)==0;
+        return PreferenceManager.getDefaultSharedPreferences(this).getInt(SettingFragment.CAMERA_TYPE, 0) == 0;
     }
-
 
 
     public void stopVideoTalk() {

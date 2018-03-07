@@ -19,4 +19,5 @@ public class Contast {
 	public final static int DISCONNECTSEVER=0X3016;
 	public final static int SHOWTISHI = 0X3017;
 	public final static int SHOWTIME = 0X3018;
+	public final static int SHUTDOWN = 0X3019;
 }

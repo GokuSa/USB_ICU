@@ -155,21 +155,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, View
 
     @Override
     public boolean onLongClick(View v) {
-       /* final SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        //当前选择的类型
-        final int audio_input_type = sharedPreferences.getInt("audio_input_type", 0);
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity()).setSingleChoiceItems(R.array.audio_input_type, audio_input_type, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                if (which != audio_input_type) {
-                    sharedPreferences.edit().putInt("audio_input_type", which).apply();
-                }
-                mAlertDialog.dismiss();
-            }
-        });
-        builder.setTitle("请选择拾音设备类型");
-        mAlertDialog = builder.create();
-        mAlertDialog.show();*/
+
 
         SettingFragment fragment = (SettingFragment) getActivity().getSupportFragmentManager().findFragmentByTag("audio_setting");
         if (fragment != null) {
